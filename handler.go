@@ -83,8 +83,7 @@ func (h *Handler) GetQuestion(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
 	}
 
-	panic("not implemented")
-	return c.JSON(http.StatusOK, nil)
+	return c.String(http.StatusNotImplemented, "not implemented")
 }
 
 func (h *Handler) UpdateQuestion(c echo.Context) error {
@@ -94,8 +93,7 @@ func (h *Handler) UpdateQuestion(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
 	}
 
-	panic("not implemented")
-	return c.JSON(http.StatusOK, nil)
+	return c.String(http.StatusNotImplemented, "not implemented")
 }
 
 func (h *Handler) DeleteQuestion(c echo.Context) error {
@@ -105,8 +103,7 @@ func (h *Handler) DeleteQuestion(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
 	}
 
-	panic("not implemented")
-	return c.JSON(http.StatusOK, nil)
+	return c.String(http.StatusNotImplemented, "not implemented")
 }
 
 func FromQuestion(q *AlgorithmQuestion) *QuestionReqRes {
