@@ -1,9 +1,6 @@
 package main
 
-type (
-	Difficulty string
-	Tag        string
-)
+type Difficulty string
 
 const (
 	Easy   Difficulty = "easy"
@@ -21,7 +18,7 @@ type (
 
 		Editorial Editorial
 
-		Tags      []Tag
+		Tags      []string
 		TestCases []TestCase
 	}
 

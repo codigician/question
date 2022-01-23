@@ -30,6 +30,10 @@ type (
 	}
 )
 
+func NewHandler(qservice Service) *Handler {
+	return &Handler{qservice}
+}
+
 func (h *Handler) RegisterRoutes(router *echo.Echo) {
 	// filtering:  /questions?tag=trees&tag=bfs&tag=dfs&difficulty=easy
 	router.GET("/questions", h.FilterQuestions)
@@ -122,16 +126,11 @@ func FromQuestion(q *AlgorithmQuestion) *QuestionReqRes {
 }
 
 func (r QuestionReqRes) To() *AlgorithmQuestion {
-	var tags []Tag
-	for _, tag := range r.Tags {
-		tags = append(tags, Tag(tag))
-	}
-
 	return &AlgorithmQuestion{
 		Title:      r.Title,
 		Content:    r.Content,
 		Template:   r.Template,
 		Difficulty: Difficulty(r.Difficulty),
-		Tags:       tags,
+		Tags:       r.Tags,
 	}
 }

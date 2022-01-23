@@ -16,6 +16,10 @@ type (
 	}
 )
 
+func NewService(repository Repository) *QuestionService {
+	return &QuestionService{repository}
+}
+
 func (s *QuestionService) Create(q *AlgorithmQuestion) (*AlgorithmQuestion, error) {
 	err := s.repository.Save(q)
 	return q, err
