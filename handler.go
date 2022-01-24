@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"net/http"
 	"strings"
 
@@ -9,8 +10,8 @@ import (
 
 type (
 	Service interface {
-		Create(q *AlgorithmQuestion) (*AlgorithmQuestion, error)
-		Filter(f Filter) ([]AlgorithmQuestion, error)
+		Create(ctx context.Context, q *AlgorithmQuestion) (*AlgorithmQuestion, error)
+		Filter(ctx context.Context, f Filter) ([]AlgorithmQuestion, error)
 	}
 
 	Handler struct {
@@ -52,7 +53,7 @@ func (h *Handler) CreateQuestion(c echo.Context) error {
 		return err
 	}
 
-	q, err := h.qservice.Create(req.To())
+	q, err := h.qservice.Create(c.Request().Context(), req.To())
 	if err != nil {
 		return err
 	}
@@ -68,7 +69,7 @@ func (h *Handler) FilterQuestions(c echo.Context) error {
 		Tags:       strings.Split(tags, ","),
 		Difficulty: Difficulty(difficulty),
 	}
-	questions, err := h.qservice.Filter(f)
+	questions, err := h.qservice.Filter(c.Request().Context(), f)
 	if err != nil {
 		return err
 	}

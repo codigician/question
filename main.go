@@ -31,7 +31,7 @@ func main() {
 	}
 
 	go func() {
-		if err := e.Start(":8000"); err != nil {
+		if err := e.Start(_serverURI); err != nil {
 			log.Println(err)
 		}
 	}()

@@ -3,8 +3,14 @@ package main
 import (
 	"context"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	_databaseListing    = "listing"
+	_collectionQuestion = "question"
 )
 
 type Mongo struct {
@@ -26,14 +32,25 @@ func (m *Mongo) Disconnect(ctx context.Context) error {
 	return m.client.Disconnect(ctx)
 }
 
-func (m *Mongo) Collection(db, collection string) *mongo.Collection {
-	return m.client.Database(db).Collection(collection)
+func (m *Mongo) Find(ctx context.Context, tags []string, difficulty Difficulty) (questions []AlgorithmQuestion, err error) {
+	filterQuery := bson.M{
+		"tags":       tags,
+		"difficulty": string(difficulty),
+	}
+	cursor, err := m.client.Database(_databaseListing).Collection(_collectionQuestion).Find(ctx, filterQuery)
+	if err != nil {
+		return nil, err
+	}
+
+	err = cursor.All(ctx, &questions)
+	return questions, err
 }
 
-func (m *Mongo) Find(tags []string, difficulty Difficulty) ([]AlgorithmQuestion, error) {
-	return nil, nil
-}
-
-func (m *Mongo) Save(q *AlgorithmQuestion) error {
-	return nil
+func (m *Mongo) Save(ctx context.Context, q *AlgorithmQuestion) (string, error) {
+	res, err := m.client.Database(_databaseListing).Collection(_collectionQuestion).InsertOne(ctx, q)
+	if err != nil {
+		return "", err
+	}
+	id, _ := res.InsertedID.(string)
+	return id, nil
 }

@@ -1,9 +1,11 @@
 package main
 
+import "context"
+
 type (
 	Repository interface {
-		Save(q *AlgorithmQuestion) error
-		Find(tags []string, difficulty Difficulty) ([]AlgorithmQuestion, error)
+		Save(ctx context.Context, q *AlgorithmQuestion) (string, error)
+		Find(ctx context.Context, tags []string, difficulty Difficulty) ([]AlgorithmQuestion, error)
 	}
 
 	QuestionService struct {
@@ -20,11 +22,12 @@ func NewService(repository Repository) *QuestionService {
 	return &QuestionService{repository}
 }
 
-func (s *QuestionService) Create(q *AlgorithmQuestion) (*AlgorithmQuestion, error) {
-	err := s.repository.Save(q)
+func (s *QuestionService) Create(ctx context.Context, q *AlgorithmQuestion) (*AlgorithmQuestion, error) {
+	id, err := s.repository.Save(ctx, q)
+	q.ID = id
 	return q, err
 }
 
-func (s *QuestionService) Filter(f Filter) ([]AlgorithmQuestion, error) {
-	return s.repository.Find(f.Tags, f.Difficulty)
+func (s *QuestionService) Filter(ctx context.Context, f Filter) ([]AlgorithmQuestion, error) {
+	return s.repository.Find(ctx, f.Tags, f.Difficulty)
 }
