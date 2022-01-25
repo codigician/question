@@ -34,7 +34,7 @@ func (m *Mongo) Disconnect(ctx context.Context) error {
 
 func (m *Mongo) Find(ctx context.Context, tags []string, difficulty Difficulty) (questions []AlgorithmQuestion, err error) {
 	filterQuery := bson.M{
-		"tags":       tags,
+		"tags":       bson.M{"$in": tags},
 		"difficulty": string(difficulty),
 	}
 	cursor, err := m.client.Database(_databaseListing).Collection(_collectionQuestion).Find(ctx, filterQuery)

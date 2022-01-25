@@ -10,7 +10,7 @@ const (
 
 type (
 	AlgorithmQuestion struct {
-		ID         string
+		ID         string `bson:"_id"`
 		Title      string
 		Content    string
 		Template   string
