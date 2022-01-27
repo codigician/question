@@ -94,6 +94,18 @@ func (s *QuestionMongoTestSuite) TestSave() {
 	s.Equal(expectedQuestion.Title, actualQuestion.Title)
 }
 
+func (s *QuestionMongoTestSuite) TestGet() {
+	ctx := context.Background()
+
+	createdMongoQuestion := s.createMongoQuestion(question.Easy, []string{"binary tree", "tree", "data structures"})
+	s.insertQuestions(ctx, createdMongoQuestion)
+
+	question, err := s.mongo.Get(ctx, createdMongoQuestion.ID.Hex())
+	s.Nil(err)
+	s.Equal([]string{"binary tree", "tree", "data structures"}, question.Tags)
+	s.Equal("easy", string(question.Difficulty))
+}
+
 func (s *QuestionMongoTestSuite) createMongoQuestion(diff question.Difficulty, tags []string) qmongo.AlgoQuestion {
 	return qmongo.AlgoQuestion{
 		ID:         primitive.NewObjectID(),

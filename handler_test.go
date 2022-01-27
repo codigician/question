@@ -109,6 +109,44 @@ func TestCreateQuestion(t *testing.T) {
 }
 
 func TestGetQuestion(t *testing.T) {
+	mockService := mocks.NewMockService(gomock.NewController(t))
+	srv := createTestServerAndRegisterRoutes(mockService)
+	defer srv.Close()
+
+	testCases := []struct {
+		scenario           string
+		givenQuestionID    string
+		expectedStatusCode int
+		mockErr            error
+	}{
+		{
+			scenario:           "Given no question id it should return 404",
+			expectedStatusCode: http.StatusNotFound,
+		},
+		{
+			scenario:           "Given valid question id it should return 200",
+			givenQuestionID:    "1",
+			expectedStatusCode: http.StatusOK,
+		},
+		{
+			scenario:           "Given valid question id, service fails, it should return 500",
+			givenQuestionID:    "2",
+			expectedStatusCode: http.StatusInternalServerError,
+			mockErr:            errors.New("an error"),
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.scenario, func(t *testing.T) {
+			mockService.EXPECT().
+				Get(gomock.Any(), tC.givenQuestionID).
+				Return(&q.Algorithm{}, tC.mockErr)
+
+			res, _ := http.Get(fmt.Sprintf("%s/questions/%s", srv.URL, tC.givenQuestionID))
+
+			assert.Equal(t, tC.expectedStatusCode, res.StatusCode)
+		})
+	}
 }
 
 func TestUpdateQuestion(t *testing.T) {

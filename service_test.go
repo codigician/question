@@ -48,3 +48,15 @@ func TestFilter_GivenFilter_ExpectRepositoryCallWithFilters(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, 0, len(res))
 }
+
+func TestGet_GivenID_CallRepository(t *testing.T) {
+	mockRepository := mocks.NewMockRepository(gomock.NewController(t))
+	mockRepository.EXPECT().Get(gomock.Any(), "1").
+		Return(&question.Algorithm{}, nil)
+
+	service := question.NewService(mockRepository)
+
+	_, err := service.Get(context.Background(), "1")
+
+	assert.Nil(t, err)
+}

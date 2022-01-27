@@ -4,6 +4,7 @@ import "context"
 
 type (
 	Repository interface {
+		Get(ctx context.Context, id string) (*Algorithm, error)
 		Save(ctx context.Context, q *Algorithm) (string, error)
 		Find(ctx context.Context, tags []string, difficulty Difficulty) ([]Algorithm, error)
 	}
@@ -30,4 +31,8 @@ func (s *QuestionService) Create(ctx context.Context, q *Algorithm) (*Algorithm,
 
 func (s *QuestionService) Filter(ctx context.Context, f Filter) ([]Algorithm, error) {
 	return s.repository.Find(ctx, f.Tags, f.Difficulty)
+}
+
+func (s *QuestionService) Get(ctx context.Context, id string) (*Algorithm, error) {
+	return s.repository.Get(ctx, id)
 }

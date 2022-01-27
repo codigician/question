@@ -76,6 +76,18 @@ func (m *Mongo) Save(ctx context.Context, q *question.Algorithm) (string, error)
 	return id.Hex(), nil
 }
 
+func (m *Mongo) Get(ctx context.Context, id string) (*question.Algorithm, error) {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var aq AlgoQuestion
+	err = m.lq().FindOne(ctx, bson.M{"_id": oid}).Decode(&aq)
+	question := aq.to()
+	return &question, err
+}
+
 func (m *Mongo) lq() *mongo.Collection {
 	return m.client.Database(_databaseListing).Collection(_collectionQuestion)
 }

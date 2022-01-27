@@ -11,6 +11,7 @@ import (
 
 type (
 	Service interface {
+		Get(ctx context.Context, id string) (*Algorithm, error)
 		Create(ctx context.Context, q *Algorithm) (*Algorithm, error)
 		Filter(ctx context.Context, f Filter) ([]Algorithm, error)
 	}
@@ -90,7 +91,13 @@ func (h *Handler) GetQuestion(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
 	}
 
-	return c.String(http.StatusNotImplemented, "not implemented")
+	q, err := h.qservice.Get(c.Request().Context(), id)
+	if err != nil {
+		log.Printf("get question: %v\n", err)
+		return err
+	}
+
+	return c.JSON(http.StatusOK, FromQuestion(q))
 }
 
 func (h *Handler) UpdateQuestion(c echo.Context) error {
