@@ -13,12 +13,13 @@ import (
 	"github.com/golang/mock/gomock"
 
 	q "github.com/codigician/question"
+	"github.com/codigician/question/mocks"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFilterQuestions(t *testing.T) {
-	mockService := q.NewMockService(gomock.NewController(t))
+	mockService := mocks.NewMockService(gomock.NewController(t))
 	srv := createTestServerAndRegisterRoutes(mockService)
 	defer srv.Close()
 
@@ -62,7 +63,7 @@ func TestFilterQuestions(t *testing.T) {
 }
 
 func TestCreateQuestion(t *testing.T) {
-	mockService := q.NewMockService(gomock.NewController(t))
+	mockService := mocks.NewMockService(gomock.NewController(t))
 	srv := createTestServerAndRegisterRoutes(mockService)
 	defer srv.Close()
 
@@ -116,7 +117,7 @@ func TestUpdateQuestion(t *testing.T) {
 func TestDeleteQuestion(t *testing.T) {
 }
 
-func createTestServerAndRegisterRoutes(service *q.MockService) *httptest.Server {
+func createTestServerAndRegisterRoutes(service *mocks.MockService) *httptest.Server {
 	e := echo.New()
 	handler := q.NewHandler(service)
 	handler.RegisterRoutes(e)

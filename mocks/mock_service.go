@@ -2,12 +2,13 @@
 // Source: handler.go
 
 // Package main is a generated GoMock package.
-package question
+package mocks
 
 import (
 	context "context"
 	reflect "reflect"
 
+	question "github.com/codigician/question"
 	gomock "github.com/golang/mock/gomock"
 )
 
@@ -35,10 +36,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockService) Create(ctx context.Context, q *Algorithm) (*Algorithm, error) {
+func (m *MockService) Create(ctx context.Context, q *question.Algorithm) (*question.Algorithm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, q)
-	ret0, _ := ret[0].(*Algorithm)
+	ret0, _ := ret[0].(*question.Algorithm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +51,10 @@ func (mr *MockServiceMockRecorder) Create(ctx, q interface{}) *gomock.Call {
 }
 
 // Filter mocks base method.
-func (m *MockService) Filter(ctx context.Context, f Filter) ([]Algorithm, error) {
+func (m *MockService) Filter(ctx context.Context, f question.Filter) ([]question.Algorithm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Filter", ctx, f)
-	ret0, _ := ret[0].([]Algorithm)
+	ret0, _ := ret[0].([]question.Algorithm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

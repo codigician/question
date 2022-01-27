@@ -19,4 +19,5 @@ lint:
 	golangci-lint run
 
 mockgen:
-	mockgen -destination=mock_service.go -package main -source=handler.go
+	mockgen -destination=mocks/mock_service.go -package mocks -source=handler.go
+	mockgen -destination=mocks/mock_repository.go -package mocks -source=service.go
