@@ -9,8 +9,8 @@ const (
 )
 
 type (
-	AlgorithmQuestion struct {
-		ID         string `bson:"_id"`
+	Algorithm struct {
+		ID         string
 		Title      string
 		Content    string
 		Template   string

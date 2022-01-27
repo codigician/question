@@ -71,7 +71,7 @@ func TestCreateQuestion(t *testing.T) {
 		givenReqBody         interface{}
 		expectedStatusCode   int
 		mockErr              error
-		expectedAlgoQuestion *q.AlgorithmQuestion
+		expectedAlgoQuestion *q.Algorithm
 	}{
 		{
 			scenario:           "Given bad request it should return 400",
@@ -81,14 +81,14 @@ func TestCreateQuestion(t *testing.T) {
 		{
 			scenario:             "Given valid request body service call fails it should return 500",
 			givenReqBody:         q.QuestionReqRes{},
-			expectedAlgoQuestion: &q.AlgorithmQuestion{},
+			expectedAlgoQuestion: &q.Algorithm{},
 			expectedStatusCode:   http.StatusInternalServerError,
 			mockErr:              errors.New("an error"),
 		},
 		{
 			scenario:             "Given valid request body service call succeeds it should return 201",
 			givenReqBody:         q.QuestionReqRes{Title: "title", Content: "content"},
-			expectedAlgoQuestion: &q.AlgorithmQuestion{Title: "title", Content: "content"},
+			expectedAlgoQuestion: &q.Algorithm{Title: "title", Content: "content"},
 			expectedStatusCode:   http.StatusCreated,
 		},
 	}

@@ -35,10 +35,10 @@ func (m *MockService) EXPECT() *MockServiceMockRecorder {
 }
 
 // Create mocks base method.
-func (m *MockService) Create(ctx context.Context, q *AlgorithmQuestion) (*AlgorithmQuestion, error) {
+func (m *MockService) Create(ctx context.Context, q *Algorithm) (*Algorithm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", ctx, q)
-	ret0, _ := ret[0].(*AlgorithmQuestion)
+	ret0, _ := ret[0].(*Algorithm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -50,10 +50,10 @@ func (mr *MockServiceMockRecorder) Create(ctx, q interface{}) *gomock.Call {
 }
 
 // Filter mocks base method.
-func (m *MockService) Filter(ctx context.Context, f Filter) ([]AlgorithmQuestion, error) {
+func (m *MockService) Filter(ctx context.Context, f Filter) ([]Algorithm, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Filter", ctx, f)
-	ret0, _ := ret[0].([]AlgorithmQuestion)
+	ret0, _ := ret[0].([]Algorithm)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

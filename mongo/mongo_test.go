@@ -7,10 +7,10 @@ import (
 
 	"github.com/codigician/question"
 	qmongo "github.com/codigician/question/mongo"
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 	"github.com/testcontainers/testcontainers-go"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -58,9 +58,9 @@ func (s *QuestionMongoTestSuite) TestFind() {
 	ctx := context.Background()
 
 	s.insertQuestions(ctx,
-		s.createQuestion(question.Easy, []string{"binary tree", "tree", "data structures"}),
-		s.createQuestion(question.Easy, []string{"tree", "binary tree"}),
-		s.createQuestion(question.Medium, []string{"tree", "binary tree"}),
+		s.createMongoQuestion(question.Easy, []string{"binary tree", "tree", "data structures"}),
+		s.createMongoQuestion(question.Easy, []string{"tree", "binary tree"}),
+		s.createMongoQuestion(question.Medium, []string{"tree", "binary tree"}),
 	)
 
 	questions, err := s.mongo.Find(ctx, []string{"tree", "binary tree"}, question.Easy)
@@ -77,14 +77,29 @@ func (s *QuestionMongoTestSuite) TestSave() {
 
 	id, err := s.mongo.Save(ctx, &expectedQuestion)
 
+	actualQuestion := s.getQuestion(ctx, id)
+
 	s.Nil(err)
-	s.Equal(expectedQuestion, s.getQuestion(ctx, id))
+	s.Equal(expectedQuestion.Content, actualQuestion.Content)
+	s.Equal(expectedQuestion.Tags, actualQuestion.Tags)
+	s.Equal(string(expectedQuestion.Difficulty), actualQuestion.Difficulty)
+	s.Equal(expectedQuestion.Template, actualQuestion.Template)
+	s.Equal(expectedQuestion.Title, actualQuestion.Title)
 }
 
-func (s *QuestionMongoTestSuite) createQuestion(diff question.Difficulty, tags []string) question.AlgorithmQuestion {
-	return question.AlgorithmQuestion{
-		// TODO: make this id created by mongodb
-		ID:         uuid.NewString(),
+func (s *QuestionMongoTestSuite) createMongoQuestion(diff question.Difficulty, tags []string) qmongo.AlgoQuestion {
+	return qmongo.AlgoQuestion{
+		ID:         primitive.NewObjectID(),
+		Title:      "Title",
+		Content:    "Content",
+		Template:   "Template",
+		Difficulty: string(diff),
+		Tags:       tags,
+	}
+}
+
+func (s *QuestionMongoTestSuite) createQuestion(diff question.Difficulty, tags []string) question.Algorithm {
+	return question.Algorithm{
 		Title:      "Title",
 		Content:    "Content",
 		Template:   "Template",
@@ -93,7 +108,7 @@ func (s *QuestionMongoTestSuite) createQuestion(diff question.Difficulty, tags [
 	}
 }
 
-func (s *QuestionMongoTestSuite) insertQuestions(ctx context.Context, questions ...question.AlgorithmQuestion) {
+func (s *QuestionMongoTestSuite) insertQuestions(ctx context.Context, questions ...qmongo.AlgoQuestion) {
 	var documents []interface{}
 	for idx := range questions {
 		documents = append(documents, questions[idx])
@@ -102,15 +117,20 @@ func (s *QuestionMongoTestSuite) insertQuestions(ctx context.Context, questions 
 	s.client.Database(_database).Collection(_collection).InsertMany(ctx, documents)
 }
 
-func (s *QuestionMongoTestSuite) getQuestion(ctx context.Context, id string) question.AlgorithmQuestion {
-	res := s.client.Database(_database).Collection(_collection).FindOne(ctx, bson.M{"_id": id})
-	if res.Err() != nil {
-		log.Fatal(res.Err())
+func (s *QuestionMongoTestSuite) getQuestion(ctx context.Context, id string) qmongo.AlgoQuestion {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal("invalid object id")
 	}
 
-	var actualQuestion question.AlgorithmQuestion
+	res := s.client.Database(_database).Collection(_collection).FindOne(ctx, bson.M{"_id": oid})
+	if res.Err() != nil {
+		log.Fatal("find one: ", res.Err())
+	}
+
+	var actualQuestion qmongo.AlgoQuestion
 	if err := res.Decode(&actualQuestion); err != nil {
-		log.Fatal(err)
+		log.Fatal("actual question decode", err)
 	}
 
 	return actualQuestion

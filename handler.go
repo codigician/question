@@ -2,6 +2,7 @@ package question
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strings"
 
@@ -10,8 +11,8 @@ import (
 
 type (
 	Service interface {
-		Create(ctx context.Context, q *AlgorithmQuestion) (*AlgorithmQuestion, error)
-		Filter(ctx context.Context, f Filter) ([]AlgorithmQuestion, error)
+		Create(ctx context.Context, q *Algorithm) (*Algorithm, error)
+		Filter(ctx context.Context, f Filter) ([]Algorithm, error)
 	}
 
 	Handler struct {
@@ -55,6 +56,7 @@ func (h *Handler) CreateQuestion(c echo.Context) error {
 
 	q, err := h.qservice.Create(c.Request().Context(), req.To())
 	if err != nil {
+		log.Printf("create question: %v\n", err)
 		return err
 	}
 
@@ -74,6 +76,7 @@ func (h *Handler) FilterQuestions(c echo.Context) error {
 
 	questions, err := h.qservice.Filter(c.Request().Context(), filter)
 	if err != nil {
+		log.Printf("filter questions: %v\n", err)
 		return err
 	}
 
@@ -110,7 +113,7 @@ func (h *Handler) DeleteQuestion(c echo.Context) error {
 	return c.String(http.StatusNotImplemented, "not implemented")
 }
 
-type Questions []AlgorithmQuestion
+type Questions []Algorithm
 
 func (questions Questions) To() (filterRes []*QuestionReqRes) {
 	for idx := range questions {
@@ -119,7 +122,7 @@ func (questions Questions) To() (filterRes []*QuestionReqRes) {
 	return filterRes
 }
 
-func FromQuestion(q *AlgorithmQuestion) *QuestionReqRes {
+func FromQuestion(q *Algorithm) *QuestionReqRes {
 	var tags []string
 	for _, tag := range q.Tags {
 		tags = append(tags, string(tag))
@@ -134,8 +137,8 @@ func FromQuestion(q *AlgorithmQuestion) *QuestionReqRes {
 	}
 }
 
-func (r QuestionReqRes) To() *AlgorithmQuestion {
-	return &AlgorithmQuestion{
+func (r QuestionReqRes) To() *Algorithm {
+	return &Algorithm{
 		Title:      r.Title,
 		Content:    r.Content,
 		Template:   r.Template,
