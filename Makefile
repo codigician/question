@@ -17,3 +17,6 @@ code-coverage:
 
 lint:
 	golangci-lint run
+
+mockgen:
+	mockgen -destination=mock_service.go -package main -source=handler.go

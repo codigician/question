@@ -62,23 +62,22 @@ func (h *Handler) CreateQuestion(c echo.Context) error {
 }
 
 func (h *Handler) FilterQuestions(c echo.Context) error {
-	tags := c.Param("tags")
-	difficulty := c.Param("difficulty")
+	var filter Filter
 
-	f := Filter{
-		Tags:       strings.Split(tags, ","),
-		Difficulty: Difficulty(difficulty),
+	if tags := c.QueryParam("tags"); tags != "" {
+		filter.Tags = strings.Split(tags, ",")
 	}
-	questions, err := h.qservice.Filter(c.Request().Context(), f)
+
+	if difficulty := c.QueryParam("difficulty"); difficulty != "" {
+		filter.Difficulty = Difficulty(difficulty)
+	}
+
+	questions, err := h.qservice.Filter(c.Request().Context(), filter)
 	if err != nil {
 		return err
 	}
 
-	var filterRes []*QuestionReqRes
-	for idx := range questions {
-		filterRes = append(filterRes, FromQuestion(&questions[idx]))
-	}
-	return c.JSON(http.StatusOK, filterRes)
+	return c.JSON(http.StatusOK, Questions(questions).To())
 }
 
 func (h *Handler) GetQuestion(c echo.Context) error {
@@ -109,6 +108,15 @@ func (h *Handler) DeleteQuestion(c echo.Context) error {
 	}
 
 	return c.String(http.StatusNotImplemented, "not implemented")
+}
+
+type Questions []AlgorithmQuestion
+
+func (questions Questions) To() (filterRes []*QuestionReqRes) {
+	for idx := range questions {
+		filterRes = append(filterRes, FromQuestion(&questions[idx]))
+	}
+	return filterRes
 }
 
 func FromQuestion(q *AlgorithmQuestion) *QuestionReqRes {

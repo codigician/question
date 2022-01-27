@@ -2,7 +2,12 @@ module github.com/codigician/question
 
 go 1.17
 
-require github.com/stretchr/testify v1.7.0
+require (
+	github.com/golang/mock v1.4.1
+	github.com/google/uuid v1.3.0
+	github.com/stretchr/testify v1.7.0
+	golang.org/x/net v0.0.0-20211108170745-6635138e15ea
+)
 
 require (
 	github.com/Azure/go-ansiterm v0.0.0-20170929234023-d6e3b3328b78 // indirect
@@ -20,7 +25,6 @@ require (
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.5 // indirect
@@ -43,7 +47,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	go.opencensus.io v0.22.3 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/net v0.0.0-20211108170745-6635138e15ea // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a // indirect
 	golang.org/x/sys v0.0.0-20211109184856-51b60fd695b3 // indirect
 	golang.org/x/text v0.3.7 // indirect
