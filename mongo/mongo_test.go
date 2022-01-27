@@ -44,14 +44,21 @@ func (s *QuestionMongoTestSuite) SetupSuite() {
 	s.container = s.createMongoDBContainer(ctx)
 	s.client = s.createMongoDBClient(ctx, uri)
 	s.mongo = qmongo.NewMongo(uri)
-	s.mongo.Connect(ctx)
+	if err := s.mongo.Connect(ctx); err != nil {
+		log.Fatalf("mongo connect: %v\n", err)
+	}
 }
 
 func (s *QuestionMongoTestSuite) TearDownSuite() {
 	ctx := context.Background()
 
-	s.mongo.Disconnect(ctx)
-	s.container.Terminate(ctx)
+	if err := s.mongo.Disconnect(ctx); err != nil {
+		log.Fatalf("mongo disconnect: %v\n", err)
+	}
+
+	if err := s.container.Terminate(ctx); err != nil {
+		log.Fatalf("container terminate: %v\n", err)
+	}
 }
 
 func (s *QuestionMongoTestSuite) TestFind() {
@@ -114,7 +121,9 @@ func (s *QuestionMongoTestSuite) insertQuestions(ctx context.Context, questions 
 		documents = append(documents, questions[idx])
 	}
 
-	s.client.Database(_database).Collection(_collection).InsertMany(ctx, documents)
+	if _, err := s.client.Database(_database).Collection(_collection).InsertMany(ctx, documents); err != nil {
+		log.Fatalf("insert many: %v\n", err)
+	}
 }
 
 func (s *QuestionMongoTestSuite) getQuestion(ctx context.Context, id string) qmongo.AlgoQuestion {
