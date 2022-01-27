@@ -1,8 +1,9 @@
-package main
+package mongo
 
 import (
 	"context"
 
+	"github.com/codigician/question"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,7 +33,7 @@ func (m *Mongo) Disconnect(ctx context.Context) error {
 	return m.client.Disconnect(ctx)
 }
 
-func (m *Mongo) Find(ctx context.Context, tags []string, difficulty Difficulty) (questions []AlgorithmQuestion, err error) {
+func (m *Mongo) Find(ctx context.Context, tags []string, difficulty question.Difficulty) (questions []question.AlgorithmQuestion, err error) {
 	filterQuery := bson.M{
 		"tags":       bson.M{"$in": tags},
 		"difficulty": string(difficulty),
@@ -46,7 +47,7 @@ func (m *Mongo) Find(ctx context.Context, tags []string, difficulty Difficulty) 
 	return questions, err
 }
 
-func (m *Mongo) Save(ctx context.Context, q *AlgorithmQuestion) (string, error) {
+func (m *Mongo) Save(ctx context.Context, q *question.AlgorithmQuestion) (string, error) {
 	res, err := m.client.Database(_databaseListing).Collection(_collectionQuestion).InsertOne(ctx, q)
 	if err != nil {
 		return "", err

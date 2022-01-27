@@ -1,4 +1,4 @@
-package main
+package question
 
 type Difficulty string
 

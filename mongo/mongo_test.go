@@ -1,11 +1,12 @@
-package main_test
+package mongo_test
 
 import (
 	"context"
 	"log"
 	"testing"
 
-	question "github.com/codigician/question"
+	"github.com/codigician/question"
+	qmongo "github.com/codigician/question/mongo"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
 	"github.com/testcontainers/testcontainers-go"
@@ -23,7 +24,7 @@ type QuestionMongoTestSuite struct {
 	suite.Suite
 	container testcontainers.Container
 	client    *mongo.Client
-	mongo     *question.Mongo
+	mongo     *qmongo.Mongo
 }
 
 func TestIntegrationQuestionMongo(t *testing.T) {
@@ -42,7 +43,7 @@ func (s *QuestionMongoTestSuite) SetupSuite() {
 
 	s.container = s.createMongoDBContainer(ctx)
 	s.client = s.createMongoDBClient(ctx, uri)
-	s.mongo = question.NewMongo(uri)
+	s.mongo = qmongo.NewMongo(uri)
 	s.mongo.Connect(ctx)
 }
 

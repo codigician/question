@@ -6,6 +6,8 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/codigician/question"
+	"github.com/codigician/question/mongo"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/net/context"
 )
@@ -20,9 +22,9 @@ const (
 func main() {
 	e := echo.New()
 
-	questionMongodb := NewMongo(_mongoURI)
-	questionService := NewService(questionMongodb)
-	questionHandler := NewHandler(questionService)
+	questionMongodb := mongo.NewMongo(_mongoURI)
+	questionService := question.NewService(questionMongodb)
+	questionHandler := question.NewHandler(questionService)
 
 	questionHandler.RegisterRoutes(e)
 

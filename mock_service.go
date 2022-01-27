@@ -2,7 +2,7 @@
 // Source: handler.go
 
 // Package main is a generated GoMock package.
-package main
+package question
 
 import (
 	context "context"
