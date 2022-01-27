@@ -14,6 +14,7 @@ type (
 		Get(ctx context.Context, id string) (*Algorithm, error)
 		Create(ctx context.Context, q *Algorithm) (*Algorithm, error)
 		Filter(ctx context.Context, f Filter) ([]Algorithm, error)
+		Delete(ctx context.Context, id string) error
 	}
 
 	Handler struct {
@@ -117,7 +118,12 @@ func (h *Handler) DeleteQuestion(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
 	}
 
-	return c.String(http.StatusNotImplemented, "not implemented")
+	if err := h.qservice.Delete(c.Request().Context(), id); err != nil {
+		log.Printf("delete question: %v\n", err)
+		return err
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 type Questions []Algorithm

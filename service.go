@@ -7,6 +7,7 @@ type (
 		Get(ctx context.Context, id string) (*Algorithm, error)
 		Save(ctx context.Context, q *Algorithm) (string, error)
 		Find(ctx context.Context, tags []string, difficulty Difficulty) ([]Algorithm, error)
+		Delete(ctx context.Context, id string) error
 	}
 
 	QuestionService struct {
@@ -35,4 +36,8 @@ func (s *QuestionService) Filter(ctx context.Context, f Filter) ([]Algorithm, er
 
 func (s *QuestionService) Get(ctx context.Context, id string) (*Algorithm, error) {
 	return s.repository.Get(ctx, id)
+}
+
+func (s *QuestionService) Delete(ctx context.Context, id string) error {
+	return s.repository.Delete(ctx, id)
 }

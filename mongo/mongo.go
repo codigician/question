@@ -77,15 +77,38 @@ func (m *Mongo) Save(ctx context.Context, q *question.Algorithm) (string, error)
 }
 
 func (m *Mongo) Get(ctx context.Context, id string) (*question.Algorithm, error) {
-	oid, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return nil, err
-	}
+	oid, _ := primitive.ObjectIDFromHex(id)
 
 	var aq AlgoQuestion
-	err = m.lq().FindOne(ctx, bson.M{"_id": oid}).Decode(&aq)
+	err := m.lq().FindOne(ctx, bson.M{"_id": oid}).Decode(&aq)
 	question := aq.to()
 	return &question, err
+}
+
+func (m *Mongo) Update(ctx context.Context, id string, q *question.Algorithm) error {
+	oid, _ := primitive.ObjectIDFromHex(id)
+
+	filter := bson.M{"_id": oid}
+	update := bson.M{"$set": bson.M{
+		"title":      q.Title,
+		"content":    q.Content,
+		"template":   q.Template,
+		"difficulty": string(q.Difficulty),
+		"tags":       q.Tags,
+	}}
+	_, err := m.lq().UpdateOne(ctx, filter, update)
+	return err
+}
+
+func (m *Mongo) Delete(ctx context.Context, id string) error {
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.M{"_id": oid}
+	_, err = m.lq().DeleteOne(ctx, filter)
+	return err
 }
 
 func (m *Mongo) lq() *mongo.Collection {

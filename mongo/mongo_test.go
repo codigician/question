@@ -106,6 +106,48 @@ func (s *QuestionMongoTestSuite) TestGet() {
 	s.Equal("easy", string(question.Difficulty))
 }
 
+func (s *QuestionMongoTestSuite) TestDelete() {
+	ctx := context.Background()
+
+	question := s.createMongoQuestion(question.Hard, []string{"data structures"})
+	s.insertQuestions(ctx, question)
+	// get question will fail if not inserted
+	insertedQuestion := s.getQuestion(ctx, question.ID.Hex())
+	log.Println(insertedQuestion)
+
+	if err := s.mongo.Delete(ctx, question.ID.Hex()); err != nil {
+		log.Fatalf("delete one: %v\n", err)
+	}
+
+	res := s.client.Database(_database).Collection(_collection).FindOne(ctx, bson.M{"_id": question.ID})
+	s.Equal(res.Err(), mongo.ErrNoDocuments)
+}
+
+func (s *QuestionMongoTestSuite) TestUpdate() {
+	ctx := context.Background()
+
+	mq := s.createMongoQuestion(question.Hard, []string{"data structures"})
+	s.insertQuestions(ctx, mq)
+
+	q := question.Algorithm{
+		Title:      "Updated Title",
+		Content:    "Updated Content",
+		Template:   "Updated Template",
+		Difficulty: question.Easy,
+		Tags:       []string{"tree"},
+	}
+	if err := s.mongo.Update(ctx, mq.ID.Hex(), &q); err != nil {
+		log.Fatalf("update one: %v\n", err)
+	}
+
+	updatedQuestion := s.getQuestion(ctx, mq.ID.Hex())
+	s.Equal(q.Tags, updatedQuestion.Tags)
+	s.Equal(string(q.Difficulty), updatedQuestion.Difficulty)
+	s.Equal(q.Title, updatedQuestion.Title)
+	s.Equal(q.Content, updatedQuestion.Content)
+	s.Equal(q.Template, updatedQuestion.Template)
+}
+
 func (s *QuestionMongoTestSuite) createMongoQuestion(diff question.Difficulty, tags []string) qmongo.AlgoQuestion {
 	return qmongo.AlgoQuestion{
 		ID:         primitive.NewObjectID(),

@@ -60,3 +60,14 @@ func TestGet_GivenID_CallRepository(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func TestDelete_GivenID_CallRepository(t *testing.T) {
+	mockRepository := mocks.NewMockRepository(gomock.NewController(t))
+	mockRepository.EXPECT().Delete(gomock.Any(), "1").Return(nil)
+
+	service := question.NewService(mockRepository)
+
+	err := service.Delete(context.Background(), "1")
+
+	assert.Nil(t, err)
+}
