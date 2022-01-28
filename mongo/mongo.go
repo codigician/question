@@ -88,7 +88,6 @@ func (m *Mongo) Get(ctx context.Context, id string) (*question.Algorithm, error)
 func (m *Mongo) Update(ctx context.Context, id string, q *question.Algorithm) error {
 	oid, _ := primitive.ObjectIDFromHex(id)
 
-	filter := bson.M{"_id": oid}
 	update := bson.M{"$set": bson.M{
 		"title":      q.Title,
 		"content":    q.Content,
@@ -96,7 +95,7 @@ func (m *Mongo) Update(ctx context.Context, id string, q *question.Algorithm) er
 		"difficulty": string(q.Difficulty),
 		"tags":       q.Tags,
 	}}
-	_, err := m.lq().UpdateOne(ctx, filter, update)
+	_, err := m.lq().UpdateByID(ctx, oid, update)
 	return err
 }
 

@@ -7,6 +7,7 @@ type (
 		Get(ctx context.Context, id string) (*Algorithm, error)
 		Save(ctx context.Context, q *Algorithm) (string, error)
 		Find(ctx context.Context, tags []string, difficulty Difficulty) ([]Algorithm, error)
+		Update(ctx context.Context, id string, q *Algorithm) error
 		Delete(ctx context.Context, id string) error
 	}
 
@@ -40,4 +41,8 @@ func (s *QuestionService) Get(ctx context.Context, id string) (*Algorithm, error
 
 func (s *QuestionService) Delete(ctx context.Context, id string) error {
 	return s.repository.Delete(ctx, id)
+}
+
+func (s *QuestionService) Update(ctx context.Context, id string, q *Algorithm) error {
+	return s.repository.Update(ctx, id, q)
 }

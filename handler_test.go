@@ -140,7 +140,7 @@ func TestGetQuestion(t *testing.T) {
 		t.Run(tC.scenario, func(t *testing.T) {
 			mockService.EXPECT().
 				Get(gomock.Any(), tC.givenQuestionID).
-				Return(&q.Algorithm{}, tC.mockErr)
+				Return(&q.Algorithm{Tags: []string{"tag1", "tag2"}}, tC.mockErr)
 
 			res, _ := http.Get(fmt.Sprintf("%s/questions/%s", srv.URL, tC.givenQuestionID))
 
@@ -150,6 +150,61 @@ func TestGetQuestion(t *testing.T) {
 }
 
 func TestUpdateQuestion(t *testing.T) {
+	mockService := mocks.NewMockService(gomock.NewController(t))
+	srv := createTestServerAndRegisterRoutes(mockService)
+	defer srv.Close()
+
+	testCases := []struct {
+		scenario           string
+		givenQuestionID    string
+		givenQuestion      interface{}
+		expectedStatusCode int
+		expectedQuestion   *q.Algorithm
+		mockErr            error
+	}{
+		{
+			scenario:           "Given no question id it should return 404",
+			expectedStatusCode: http.StatusNotFound,
+		},
+		{
+			scenario:           "Given question id but invalid request body it should return 400",
+			givenQuestionID:    "1",
+			givenQuestion:      "invalid request body",
+			expectedStatusCode: http.StatusBadRequest,
+		},
+		{
+			scenario:           "Given valid question id and valid request body it should return 200",
+			givenQuestionID:    "2",
+			givenQuestion:      q.QuestionReqRes{Title: "title", Content: "content"},
+			expectedQuestion:   &q.Algorithm{Title: "title", Content: "content"},
+			expectedStatusCode: http.StatusNoContent,
+		},
+		{
+			scenario:           "Given valid question id, valid request body, service fails it should return 500",
+			givenQuestionID:    "3",
+			givenQuestion:      q.QuestionReqRes{Title: "title", Content: "content"},
+			expectedQuestion:   &q.Algorithm{Title: "title", Content: "content"},
+			expectedStatusCode: http.StatusInternalServerError,
+			mockErr:            errors.New("an error"),
+		},
+	}
+
+	for _, tC := range testCases {
+		t.Run(tC.scenario, func(t *testing.T) {
+			mockService.EXPECT().
+				Update(gomock.Any(), tC.givenQuestionID, tC.expectedQuestion).
+				Return(tC.mockErr)
+
+			bodyBytes, _ := json.Marshal(tC.givenQuestion)
+			req, _ := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/questions/%s", srv.URL, tC.givenQuestionID), bytes.NewBuffer(bodyBytes))
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Accept", "application/json")
+
+			res, _ := http.DefaultClient.Do(req)
+
+			assert.Equal(t, tC.expectedStatusCode, res.StatusCode)
+		})
+	}
 }
 
 func TestDeleteQuestion(t *testing.T) {

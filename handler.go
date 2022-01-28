@@ -15,6 +15,7 @@ type (
 		Create(ctx context.Context, q *Algorithm) (*Algorithm, error)
 		Filter(ctx context.Context, f Filter) ([]Algorithm, error)
 		Delete(ctx context.Context, id string) error
+		Update(ctx context.Context, id string, q *Algorithm) error
 	}
 
 	Handler struct {
@@ -88,10 +89,6 @@ func (h *Handler) FilterQuestions(c echo.Context) error {
 func (h *Handler) GetQuestion(c echo.Context) error {
 	id := c.Param("id")
 
-	if id == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
-	}
-
 	q, err := h.qservice.Get(c.Request().Context(), id)
 	if err != nil {
 		log.Printf("get question: %v\n", err)
@@ -104,19 +101,22 @@ func (h *Handler) GetQuestion(c echo.Context) error {
 func (h *Handler) UpdateQuestion(c echo.Context) error {
 	id := c.Param("id")
 
-	if id == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
+	var req QuestionReqRes
+	if err := c.Bind(&req); err != nil {
+		return err
 	}
 
-	return c.String(http.StatusNotImplemented, "not implemented")
+	err := h.qservice.Update(c.Request().Context(), id, req.To())
+	if err != nil {
+		log.Printf("update question: %v\n", err)
+		return err
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (h *Handler) DeleteQuestion(c echo.Context) error {
 	id := c.Param("id")
-
-	if id == "" {
-		return echo.NewHTTPError(http.StatusBadRequest, "id is required")
-	}
 
 	if err := h.qservice.Delete(c.Request().Context(), id); err != nil {
 		log.Printf("delete question: %v\n", err)

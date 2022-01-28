@@ -71,3 +71,21 @@ func TestDelete_GivenID_CallRepository(t *testing.T) {
 
 	assert.Nil(t, err)
 }
+
+func TestUpdate_GivenIDAndQuestion_CallRepository(t *testing.T) {
+	mockRepository := mocks.NewMockRepository(gomock.NewController(t))
+	mockQuestion := &question.Algorithm{
+		Title:      "Title",
+		Content:    "Content",
+		Template:   "Templaet",
+		Difficulty: "hard",
+	}
+	mockRepository.EXPECT().Update(gomock.Any(), "1", mockQuestion).
+		Return(nil)
+
+	service := question.NewService(mockRepository)
+
+	err := service.Update(context.Background(), "1", mockQuestion)
+
+	assert.Nil(t, err)
+}
