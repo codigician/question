@@ -17,4 +17,6 @@ WORKDIR /
 
 COPY --from=0 /app/question-api ./
 
+EXPOSE 8000
+
 CMD ["./question-api"]
