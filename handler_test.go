@@ -31,7 +31,7 @@ func TestFilterQuestions(t *testing.T) {
 		mockErr            error
 	}{
 		{
-			scenario:           "Given no query string it should call service with empty filter and return status ok",
+			scenario:           "Given valid query string it should call service with empty filter and return status ok",
 			givenQueryString:   "?tags=tag1&difficulty=easy",
 			expectedStatusCode: http.StatusOK,
 			expectedFilter:     q.Filter{Tags: []string{"tag1"}, Difficulty: q.Easy},
